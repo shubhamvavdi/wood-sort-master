@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wood Sort Master - Color Sorting Puzzle Game</title>
+<meta name="description" content="Relax your mind with Wood Sort Master, a colorful sorting puzzle game with hundreds of challenging levels.">
+<meta property="og:title" content="Wood Sort Master">
+<meta property="og:description" content="A relaxing, original color-sorting puzzle game with hundreds of levels.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪵</text></svg>">
+</head>
+<body>
+<div id="app">
+
+<div class="screen active" id="screen-menu">
+  <div class="logo"><span class="icon">🪵🔴</span><h1>WOOD SORT MASTER</h1><p>RELAX • SORT • MASTER</p></div>
+  <div class="coin-bar">🪙 <span id="menu-coins">500</span></div>
+  <div class="menu-btns">
+    <button class="btn" id="btn-play">▶ <span data-i18n="play">PLAY</span> (<span data-i18n="level">Level</span> <span id="menu-level">1</span>)</button>
+    <button class="btn secondary" id="btn-levels">🧩 <span data-i18n="levels">LEVELS</span></button>
+    <button class="btn secondary" id="btn-daily">🎁 <span data-i18n="dailyReward">DAILY REWARD</span></button>
+    <button class="btn secondary" id="btn-settings">⚙️ <span data-i18n="settings">SETTINGS</span></button>
+    <button class="btn secondary" id="btn-howto">❓ <span data-i18n="howToPlay">HOW TO PLAY</span></button>
+  </div>
+</div>
+
+<div class="screen" id="screen-levels">
+  <div class="top-row"><button class="btn-icon" id="lv-back">←</button><h2 style="margin:0">Levels</h2><div class="pill">🪙 <span id="lv-coins">0</span></div></div>
+  <div class="level-grid" id="level-grid"></div>
+</div>
+
+<div class="screen" id="screen-game">
+  <div class="game-header">
+    <button class="btn-icon" id="game-back">←</button>
+    <div class="pill">Level <span id="g-level">1</span></div>
+    <div class="pill">Moves <span id="g-moves">0</span></div>
+    <div class="pill">🪙 <span id="g-coins">0</span></div>
+    <button class="btn-icon" id="game-pause">⏸</button>
+  </div>
+  <div class="board-wrap"><div class="board" id="board"></div></div>
+  <div class="controls">
+    <button class="ctrl-btn" id="btn-undo"><span class="n">↩️</span><span data-i18n="undo">Undo</span></button>
+    <button class="ctrl-btn" id="btn-restart"><span class="n">🔄</span><span data-i18n="restart">Restart</span></button>
+    <button class="ctrl-btn" id="btn-hint"><span class="n">💡</span><span id="hint-label">Hint</span></button>
+    <button class="ctrl-btn" id="btn-extra"><span class="n">➕</span>Extra Tube</button>
+    <button class="ctrl-btn" id="btn-watchad"><span class="n">📺</span><span data-i18n="watchAd">Watch Ad</span></button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-win">
+  <div class="modal-card">
+    <h2>LEVEL COMPLETE!</h2>
+    <div class="stars-row" id="win-stars">⭐⭐⭐</div>
+    <p>Moves: <b id="win-moves">0</b><br>Coins earned: <b id="win-coins">+0</b></p>
+    <div class="row-btns">
+      <button class="btn secondary" id="win-replay">Replay</button>
+      <button class="btn secondary" id="win-levels">Levels</button>
+      <button class="btn accent" id="win-next">Next ➜</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-restart">
+  <div class="modal-card">
+    <h2>Restart this level?</h2>
+    <p>Your moves and undo history will be cleared.</p>
+    <div class="row-btns"><button class="btn secondary" id="restart-cancel">Cancel</button><button class="btn accent" id="restart-confirm">Restart</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-nomoves">
+  <div class="modal-card">
+    <h2>No more moves</h2>
+    <p>This position is stuck — but the puzzle is solvable. Try Undo, Restart, or a Hint.</p>
+    <div class="row-btns"><button class="btn secondary" id="nm-undo">Undo</button><button class="btn accent" id="nm-restart">Restart</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-pause">
+  <div class="modal-card">
+    <h2>Paused</h2>
+    <div class="row-btns" style="flex-direction:column">
+      <button class="btn accent" id="p-resume">Resume</button>
+      <button class="btn secondary" id="p-restart">Restart</button>
+      <button class="btn secondary" id="p-settings">Settings</button>
+      <button class="btn secondary" id="p-exit">Exit to Menu</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-settings">
+  <div class="modal-card">
+    <h2>Settings</h2>
+    <div class="setting-row">Sound <div class="switch" id="s-sound"></div></div>
+    <div class="setting-row">Music <div class="switch" id="s-music"></div></div>
+    <div class="setting-row">Vibration <div class="switch" id="s-vibe"></div></div>
+    <div class="setting-row" style="flex-direction:column; align-items:stretch; border:none;">
+      <div style="margin-bottom:4px; font-weight:700;">Language</div>
+      <div class="lang-row">
+        <button class="lang-btn" id="lang-en" data-lang="en">English</button>
+        <button class="lang-btn" id="lang-hi" data-lang="hi">हिन्दी</button>
+        <button class="lang-btn" id="lang-gu" data-lang="gu">ગુજરાતી</button>
+      </div>
+    </div>
+    <div class="setting-row" style="border:none; padding-top:16px"><button class="btn secondary" id="s-reset" style="width:100%" data-i18n="resetProgress">Reset Progress</button></div>
+    <button class="btn accent" id="s-close" style="margin-top:12px; width:100%">Close</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-daily">
+  <div class="modal-card">
+    <h2>Daily Reward</h2>
+    <p id="daily-text">Day 1 of 7</p>
+    <div style="font-size:40px">🎁</div>
+    <p id="daily-amount" style="font-weight:800; font-size:22px; color:var(--accent)">+100 🪙</p>
+    <button class="btn accent" id="daily-claim" style="width:100%">Claim</button>
+    <button class="btn secondary" id="daily-close" style="width:100%; margin-top:8px">Close</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-tutorial">
+  <div class="modal-card">
+    <h2>How To Play</h2>
+    <p id="tut-text">Tap a tube to pick up the top balls.</p>
+    <div class="row-btns"><button class="btn secondary" id="tut-skip">Skip</button><button class="btn accent" id="tut-next">Next</button></div>
+  </div>
+</div>
+
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
