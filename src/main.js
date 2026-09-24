@@ -156,7 +156,7 @@ async function watchAdForReward(){
     analytics.track('rewarded_ad_unavailable', {reason:result.reason});
   }
 }
-function onWin(){
+async function onWin(){
   game.gameStatus='won';
   AudioManager.play('win'); vibrate([20,40,20,40,60]);
   let stars = 1;
@@ -174,6 +174,7 @@ function onWin(){
   showModal('modal-win');
   GamePortalAdapter.gameplayStop();
   analytics.track('level_completed', {level:game.level, moves:game.moves, stars, hintsUsed:game.hintsUsed, coinsEarned});
+  await ads.showInterstitial({placement:'level_complete', level:game.level});
 }
 function spawnConfetti(){
   const colors = Object.values(BALL_COLORS);
@@ -310,7 +311,9 @@ document.addEventListener('keydown', e=>{
 document.addEventListener('click', ()=>{ AudioManager.setMusic(player.settings.music); }, {once:true});
 
 GamePortalAdapter.initialize();
-initializeAds();
+initializeAds().then((ready)=>{
+  if(ready) ads.showBanner();
+});
 
 /* ===================== DEBUG MODE (only via ?debug=1, never shown otherwise) ===================== */
 function initDebugMode(){

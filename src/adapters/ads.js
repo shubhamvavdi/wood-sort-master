@@ -7,7 +7,7 @@ const GAMEHUB_TEST_MODE = import.meta.env.VITE_GAMEHUB_TEST_MODE === 'true';
 let gameHubReady = false;
 
 export async function initializeAds() {
-  if (!ADS_ENABLED || !GAMEHUB_GAME_ID) return;
+  if (!ADS_ENABLED || !GAMEHUB_GAME_ID) return false;
   try {
     await GameHubSDK.init({
       gameId: GAMEHUB_GAME_ID,
@@ -17,12 +17,25 @@ export async function initializeAds() {
       metadata: { game: 'wood-sort-master' }
     });
     gameHubReady = true;
+    return true;
   } catch (e) {
     console.warn('[Ads] GameHub SDK initialization failed', e);
+    return false;
   }
 }
 
 export const ads = {
+  async showBanner() {
+    if (ADS_ENABLED && gameHubReady) {
+      try {
+        await GameHubSDK.showBanner();
+        return { success: true };
+      } catch (e) {
+        return { success: false, reason: 'provider_error' };
+      }
+    }
+    return { success: false, reason: 'provider_unavailable' };
+  },
   async showRewarded(opts) {
     if (ADS_ENABLED && gameHubReady) {
       let rewardGranted = false;
