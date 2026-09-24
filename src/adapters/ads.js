@@ -17,6 +17,9 @@ export async function initializeAds() {
       metadata: { game: 'wood-sort-master' }
     });
     gameHubReady = true;
+    if (typeof GameHubSDK.gameLoadingFinished === 'function') {
+      GameHubSDK.gameLoadingFinished();
+    }
     return true;
   } catch (e) {
     console.warn('[Ads] GameHub SDK initialization failed', e);
@@ -25,6 +28,11 @@ export async function initializeAds() {
 }
 
 export const ads = {
+  gameplayStart() {
+    if (ADS_ENABLED && gameHubReady && typeof GameHubSDK.gameplayStart === 'function') {
+      GameHubSDK.gameplayStart();
+    }
+  },
   async showBanner() {
     if (ADS_ENABLED && gameHubReady) {
       try {

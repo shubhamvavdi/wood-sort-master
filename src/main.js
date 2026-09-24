@@ -25,6 +25,7 @@ function startLevel(n){
   renderGame();
   analytics.track('level_started', {level:n, colors:lvl.colors, tubes:lvl.tubeCount, par:lvl.par});
   GamePortalAdapter.gameplayStart();
+  ads.gameplayStart();
 }
 
 /* ===================== UI HELPERS ===================== */
