@@ -9,15 +9,24 @@ let gameHubReady = false;
 export async function initializeAds() {
   if (!ADS_ENABLED || !GAMEHUB_GAME_ID) return false;
   try {
-    await GameHubSDK.init({
-      gameId: GAMEHUB_GAME_ID,
-      apiBaseUrl: import.meta.env.VITE_GAMEHUB_API_BASE_URL,
-      apiKey: import.meta.env.VITE_GAMEHUB_PUBLIC_KEY,
-      testMode: GAMEHUB_TEST_MODE,
-      metadata: { game: 'wood-sort-master' }
-    });
+    if (window.gameHubSdkReady) {
+      await window.gameHubSdkReady;
+    } else if (window.GameHubSDK) {
+      await new Promise((resolve) => {
+        if (document.readyState === 'complete') resolve();
+        else window.addEventListener('load', resolve, {once:true});
+      });
+    } else {
+      await GameHubSDK.init({
+        gameId: GAMEHUB_GAME_ID,
+        apiBaseUrl: import.meta.env.VITE_GAMEHUB_API_BASE_URL,
+        apiKey: import.meta.env.VITE_GAMEHUB_PUBLIC_KEY,
+        testMode: GAMEHUB_TEST_MODE,
+        metadata: { game: 'wood-sort-master' }
+      });
+    }
     gameHubReady = true;
-    if (typeof GameHubSDK.gameLoadingFinished === 'function') {
+    if (!window.GameHubSDK && typeof GameHubSDK.gameLoadingFinished === 'function') {
       GameHubSDK.gameLoadingFinished();
     }
     return true;

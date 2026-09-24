@@ -128,6 +128,23 @@
 </div>
 
 </div>
+<script src="https://backend-silk-theta-80.vercel.app/sdk/gamehub-sdk.js"></script>
+<script>
+  async function startGame() {
+    await GameHubSDK.init({
+      gameId: "wood-sort-master",
+      apiKey: "ghpk_6071cd70a44e687c0fedc44293236dec09f5a05567e4046d",
+      apiBaseUrl: "https://backend-silk-theta-80.vercel.app"
+    });
+
+    GameHubSDK.gameLoadingFinished();
+    GameHubSDK.gameplayStart();
+  }
+
+  window.gameHubSdkReady = new Promise((resolve, reject) => {
+    window.addEventListener("load", () => startGame().then(resolve, reject), {once: true});
+  });
+</script>
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>
